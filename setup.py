@@ -66,6 +66,8 @@ def generate_proto(source):
 for proto_file in glob.glob('tfx/proto/*.proto'):
   generate_proto(proto_file)
 
+for proto_file in glob.glob('tfx/orchestration/kubeflow/proto/*.proto'):
+  generate_proto(proto_file)
 
 # Get various package dependencies list.
 with open('tfx/dependencies.py') as fp:
@@ -75,7 +77,6 @@ _make_required_install_packages = globals_dict['make_required_install_packages']
 _make_required_test_packages = globals_dict['make_required_test_packages']
 _make_extra_packages_docker_image = globals_dict[
     'make_extra_packages_docker_image']
-
 
 # Get version from version module.
 with open('tfx/version.py') as fp:
