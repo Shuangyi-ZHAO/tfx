@@ -36,6 +36,8 @@ from google.cloud import storage
 from tfx.components.base.base_component import BaseComponent
 from tfx.orchestration import pipeline as tfx_pipeline
 from tfx.orchestration.kubeflow.runner import KubeflowRunner
+from tfx.types import channel_utils
+from tfx.types import standard_artifacts
 
 
 # The following environment variables need to be set prior to calling the test
@@ -120,6 +122,55 @@ class BaseKubeflowTest(tf.test.TestCase):
     self._taxi_module_file = _TAXI_MODULE_FILE
 
     self._test_output_dir = 'gs://{}/test_output'.format(self._bucket_name)
+
+    # Channel of mock raw Example artifacts for testing.
+    raw_train_examples = standard_artifacts.Examples(split='train')
+    raw_train_examples.uri = os.path.join(
+        self._intermediate_data_root,
+        'csv_example_gen/examples/test-pipeline/train/')
+    raw_eval_examples = standard_artifacts.Examples(split='eval')
+    raw_eval_examples.uri = os.path.join(
+        self._intermediate_data_root,
+        'csv_example_gen/examples/test-pipeline/eval/')
+    self._test_raw_examples = channel_utils.as_channel(
+        [raw_train_examples, raw_eval_examples])
+
+    # Channel of mock transformed Example artifacts for testing.
+    transformed_train_examples = standard_artifacts.Examples(split='train')
+    transformed_train_examples.uri = os.path.join(
+        self._intermediate_data_root,
+        'transform/transformed_examples/test-pipeline/train/')
+    transformed_eval_examples = standard_artifacts.Examples(split='eval')
+    transformed_eval_examples.uri = os.path.join(
+        self._intermediate_data_root,
+        'transform/transformed_examples/test-pipeline/eval/')
+    self._test_transformed_examples = channel_utils.as_channel(
+        [transformed_eval_examples, transformed_eval_examples])
+
+    # Channel of mock Schema artifact for testing.
+    schema = standard_artifacts.Schema()
+    schema.uri = os.path.join(self._intermediate_data_root,
+                              'schema_gen/output/test-pipeline/')
+    self._test_schema = channel_utils.as_channel([schema])
+
+    # Channel of mock TransformGraph artifact for testing.
+    transform_graph = standard_artifacts.TransformGraph()
+    transform_graph.uri = os.path.join(
+        self._intermediate_data_root,
+        'transform/test-pipeline/transform_output/')
+    self._test_transform_graph = channel_utils.as_channel([transform_graph])
+
+    # Channel of mock Model artifact for testing.
+    model = standard_artifacts.Model()
+    model.uri = os.path.join(self._intermediate_data_root,
+                             'trainer/output/test-pipeline/')
+    self._test_model = channel_utils.as_channel([model])
+
+    # Channel of mock ModelBlessing artifact for testing.
+    model_blessing = standard_artifacts.ModelBlessing()
+    model_blessing.uri = os.path.join(
+        self._intermediate_data_root, 'model_validator/blessing/test-pipeline/')
+    self._test_model_blessing = channel_utils.as_channel([model_blessing])
 
   def tearDown(self):
     super(BaseKubeflowTest, self).tearDown()
