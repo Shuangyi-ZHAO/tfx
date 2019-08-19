@@ -4,6 +4,7 @@ services:
     build:
       context: ./buildfiles
       dockerfile: Dockerfile
+    image: tensorflow/tfx:workshop-latest
     ports:
     - "8080:8080" # airflow
     - "8888:8888" # jupyter notebook
